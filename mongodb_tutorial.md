@@ -14,8 +14,7 @@
 	- 쉬운 접근
 		- document == row 
 		- collection == table
-
-		| RDBMS	 | MongoDB |
+		| RDBMS | MongoDB|
 		|---|---|
 		|Database	|Database|
 		|Table	|Collection|
@@ -26,7 +25,6 @@
 		| Database Server and Client | |
 		|Mysqld/Oracle|	mongod|
 		|mysql/sqlplus|	mongo|
-
 	- Warning
 		- 트랜잭션은 구현하는것
 		- 문서의 키:밸류 는 정열 되어 있다. ex) {x:2,y:1} <> {y:1,x:2}
@@ -64,7 +62,6 @@ yourcollection
 ```
 
 - options
-
 |Field	|Type	|Description|
 |-------|-------|-----------|
 |capped	|Boolean	|(Optional) If true, enables a capped collection. Capped collection is a fixed size collection that automatically overwrites its oldest entries when it reaches its maximum size. If you specify true, you need to specify size parameter also. |
@@ -96,7 +93,6 @@ true
 
 ## MongoDB - datatypes 
 - MongoDB 가 지원하는 데이터 타입
-
 | 데이터타입 | 설명 |
 |---------|-----|
 |String | String in MongoDB must be UTF-8 valid.|
@@ -153,15 +149,127 @@ _id: ObjectId(4 bytes timestamp, 3 bytes machine id, 2 bytes process id,
 ```
 
 ### find()
-collection 의 모든 데이터 
+
+- collection 의 데이터 조회 method 
+- find(query, projection)
+	- query : document - 조건문 
+	- projection : field 를 지정 
+	- return cursor : find() 메소드는 기준에 맞는 document 를 선택하여 cursor 를 반환한다. cursor 는 쿼리 요청의 결과값을 가르키는 pointer. cursor 객체를 통해서 데이터 수를 제한 할 수 있고 sort 도 한다. 10분간 사용되지 않으면 expire 된다.
+- 
 ```
-db.COLLECTION_NAME.find()
+db.COLLECTION_NAME.find()      -- 전체 패치
+db.COLLECTION_NAME.findone()   -- 1건 패치
+```
+- where 절 
+|operation | syntax | example | rdb equivalent |
+|----------|--------|---------|----------------|
+| =        | {key:value} | db.COLLECTION_NAME.find({"name":"euzin"})| where name = 'euzin'|
+|< | {key:{$lt:value}}|db.COLLECTION_NAME.find({"cnt":{$lt:10}})| where cnt < 10 |
+|<=| {key:{$lte:value}}|db.COLLECTION_NAME.find({"cnt":{$lte:10}})| where cnt <= 10 |
+|> | {key:{$gt:value}}|db.COLLECTION_NAME.find({"cnt":{$gt:10}})| where cnt > 10 |
+|>=| {key:{$gte:value}}|db.COLLECTION_NAME.find({"cnt":{$gte:10}})| where cnt >= 10 |
+|!=| {key:{$ne:value}}|db.COLLECTION_NAME.find({"cnt":{$ne:10}})| where cnt != 10 |
+
+- $regex 연산자
+```
+{ <field>: { $regex: /pattern/, $options: '<options>' } }
+{ <field>: { $regex: 'pattern', $options: '<options>' } }
+{ <field>: { $regex: /pattern/<options> } }
+{ <field>: /pattern/<options> }
+```
+	- option : 
+		- i -> 대소문자 무시
+		- m	-> 정규식에서 anchor(^) 를 사용 할 때 값에 \n 이 있다면 무력화
+		- x	-> 정규식 안에있는 whitespace를 모두 무시
+		- s	-> dot (.) 사용 할 떄 \n 을 포함해서 매치
+```
+정규식 article0[1-2] 에 일치하는 값이 title 에 있는 Document 조회
+> db.articles.find( { “title” : /article0[1-2]/ } )
+```
+
+- and / or 
+```
+db.COLLECTION_NAME.find({$AND:[{key1:val1},{key2:val2}]})
+db.COLLECTION_NAME.find({$OR:[{key1:val1},{key2:val2}]})
+```
+
+- projection
+```
+-- article의 title과 content 만 조회
+> db.articles.find( { } , { “_id”: false, “title”: true, “content”: true } )
+-- $slice 연산자:  Embedded Document 배열을 읽을때 limit 설정.
+-- title 값이 article03 인 Document 에서 덧글은 하나만 보이게 출력
+> db.articles.find( { “title”: “article03” }, { comments: { $slice: 1 } } )
+```
+
+- sort(), limit(), skip() : 출력을 제한 가공 한다.
+```
+cursor.sort(document)
+ex) db.ARTICLE.find().sort({"_id":1})
+--> _id 값으로 오름차순 정렬  (-1 : 내림차순)
+cursor.limit(value)
+ex) db.ARTICLE.find().limit(10)
+--> ARTICLE document 의 10건만 보이기
+cursor.skip(value)
+ex) db.ARTICLE.skip(10) 
+--> 10건 생략 하고 그다음 부터 출력
+ex) order document 의 최신순으로 2건씩 표시.
+    var showPage = function(page){
+        return db.orders.find().sort( { "_id": -1 } ).skip((page-1)*2).limit(2);
+        }
 ```
 
 
-### 
+### update()
+- update(), save() 
+```
+>db.COLLECTION_NAME.update(SELECTION_CRITERIA, UPDATED_DATA)
+```
 
-## MongoDB - sorting / indexing / aggregation
+-  
+
+### delete()
+
+
+
+
+
+
+## MongoDB - Index
+- create index 
+```
+db.COLLECTION_NAME.createIndex({KEY_NAME: 1}) -- -1 내림차순 1 오름차순
+db.COLLECTION_NAME.createIndex({KEY_NAME:1, KEY2_NAME:1})  -- 복합 인덱스 생성
+```
+
+- index 속성
+```
+-- unique index
+db.COLLECTION_NAME.createIndex({KEY_NAME:1},{unique:true}) 
+-- partial index 
+db.COLLECTION_NAME.createIndex(
+    {KEY_NAME:1},
+    { partialFilterExpression: { visitors: { $gt: 1000 } } }
+  ) 
+-- ttl : index KEY_NAME 이 date 타입 이고 ttl 을 1시간으로 설정 ttl 검사 thread 는 60초 마다 실행됨.
+db.COLLECTION_NAME.createIndex(
+    {KEY_NAME:1},
+    { expireAfterSeconds: 3600 }
+  )
+```
+
+- index 확인
+```
+db.COLLECTION_NAME.getIndexes()
+```
+
+- index 제거 
+```
+db.COLLECTION_NAME.dropIndex({KEY:1})
+```
+
+
+
 ## MongoDB - Replication / Sharding / backup
 ## MongoDB - mongostat / mongotop
 
