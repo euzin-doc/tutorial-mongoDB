@@ -14,8 +14,8 @@
 	- 쉬운 접근
 		- document == row 
 		- collection == table
-		| RDBMS	 | MongoDB           |
-		|--------|-------------------|
+		| RDBMS	 | MongoDB |
+		|---|---|
 		|Database	|Database|
 		|Table	|Collection|
 		|Tuple/Row	|Document|
