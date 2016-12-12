@@ -14,6 +14,7 @@
 	- 쉬운 접근
 		- document == row 
 		- collection == table
+
 		| RDBMS	 | MongoDB |
 		|---|---|
 		|Database	|Database|
@@ -25,6 +26,7 @@
 		| Database Server and Client | |
 		|Mysqld/Oracle|	mongod|
 		|mysql/sqlplus|	mongo|
+
 	- Warning
 		- 트랜잭션은 구현하는것
 		- 문서의 키:밸류 는 정열 되어 있다. ex) {x:2,y:1} <> {y:1,x:2}
@@ -62,6 +64,7 @@ yourcollection
 ```
 
 - options
+
 |Field	|Type	|Description|
 |-------|-------|-----------|
 |capped	|Boolean	|(Optional) If true, enables a capped collection. Capped collection is a fixed size collection that automatically overwrites its oldest entries when it reaches its maximum size. If you specify true, you need to specify size parameter also. |
@@ -93,6 +96,7 @@ true
 
 ## MongoDB - datatypes 
 - MongoDB 가 지원하는 데이터 타입
+
 | 데이터타입 | 설명 |
 |---------|-----|
 |String | String in MongoDB must be UTF-8 valid.|
