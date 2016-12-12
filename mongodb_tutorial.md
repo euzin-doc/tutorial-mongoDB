@@ -14,6 +14,7 @@
 	- 쉬운 접근
 		- document == row 
 		- collection == table
+        
 		| RDBMS | MongoDB|
 		|---|---|
 		|Database	|Database|
@@ -25,6 +26,7 @@
 		| Database Server and Client | |
 		|Mysqld/Oracle|	mongod|
 		|mysql/sqlplus|	mongo|
+        
 	- Warning
 		- 트랜잭션은 구현하는것
 		- 문서의 키:밸류 는 정열 되어 있다. ex) {x:2,y:1} <> {y:1,x:2}
@@ -62,13 +64,14 @@ yourcollection
 ```
 
 - options
-|Field	|Type	|Description|
-|-------|-------|-----------|
-|capped	|Boolean	|(Optional) If true, enables a capped collection. Capped collection is a fixed size collection that automatically overwrites its oldest entries when it reaches its maximum size. If you specify true, you need to specify size parameter also. |
-|autoIndexID	|Boolean	|(Optional) If true, automatically create index on _id field.s Default value is false.|
-|size	|number	|(Optional) Specifies a maximum size in bytes for a capped collection. If capped is true, then you need to specify this field also.|
-|max	|number	|(Optional) Specifies the maximum number of documents allowed in the capped collection.|
 
+ |Field	|Type	|Description|
+ |-------|-------|-----------|
+ |capped	|Boolean	|(Optional) If true, enables a capped collection. Capped collection is a fixed size collection that automatically overwrites its oldest entries when it reaches its maximum size. If you specify true, you need to specify size parameter also. |
+ |autoIndexID	|Boolean	|(Optional) If true, automatically create index on _id field.s Default value is false.|
+ |size	|number	|(Optional) Specifies a maximum size in bytes for a capped collection. If capped is true, then you need to specify this field also.|
+ |max	|number	|(Optional) Specifies the maximum number of documents allowed in the capped collection.|
+ 
 - mongodb 에서는 document 를 insert 하는 순간 collection 은 자동으로 생성되므로, create collection 이 필요 없다.
 ```
 >db.mycollection.insert({"name" : "euzin"})
@@ -93,6 +96,7 @@ true
 
 ## MongoDB - datatypes 
 - MongoDB 가 지원하는 데이터 타입
+
 | 데이터타입 | 설명 |
 |---------|-----|
 |String | String in MongoDB must be UTF-8 valid.|
@@ -161,6 +165,7 @@ db.COLLECTION_NAME.find()      -- 전체 패치
 db.COLLECTION_NAME.findone()   -- 1건 패치
 ```
 - where 절 
+
 |operation | syntax | example | rdb equivalent |
 |----------|--------|---------|----------------|
 | =        | {key:value} | db.COLLECTION_NAME.find({"name":"euzin"})| where name = 'euzin'|
