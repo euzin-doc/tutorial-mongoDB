@@ -278,7 +278,41 @@ db.COLLECTION_NAME.dropIndex({KEY:1})
 
 
 ## MongoDB - Replication / Sharding / backup
+### MongoDB Sharding
+- 몽고DB 샤드는 3가지 구성요소를 가진다.  
+	- shard : 분산된 물리적 데이터 set 이며, 각각의 샤드는 replica set으로 구성할 수 있다. 
+	- mongos : 클라이언트 어플리케이션과 샤드 클러스터 간의 인터페이스를 제공 하며, query router 처럼 동작한다.
+	- config servers : 메타데이터와 설정을 저장한다. 3.4 버전 부터는 config server 또한 replica set으로 구성해야만 한다.(CSRS)
+
+
+## MongoDB - manage mongod process
+- start mongod process
+```
+mongod --dbpath $DB_PATH (default /data/db)
+         --port $PORT (default 27017)
+         --fork --logpath $LOG_PATH (ex. /var/log/mongodb.log)
+```
+
+- stop mongod process
+ 	- clean shutdown 이 수행 되면 mongod 는 모든 지연된 작업을 완료 시키고,  데이터를 디스크에 flush 한후 모든 파일을 닫는다.   
+
+	```
+# in mongo shell 
+use admin
+db.shutdownServer()
+# in linux shell
+mongod --shutdown
+```
+> 어쩔 수 없이 kill process 할 경우 
+> kill <mongod proceess id>
+> kill -2 <mongod proceess id>
+> kill -9 (SIGKILL) 하지 말것 이라고 공식적으로 경고하고 있다.
+
+- Run-time Database Configuration 
+	- https://docs.mongodb.com/v3.2/administration/configuration/
+
 ## MongoDB - mongostat / mongotop
+
 
 
 ## PyMongo
