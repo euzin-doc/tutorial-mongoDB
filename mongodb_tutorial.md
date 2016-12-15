@@ -284,6 +284,54 @@ db.COLLECTION_NAME.dropIndex({KEY:1})
 	- mongos : 클라이언트 어플리케이션과 샤드 클러스터 간의 인터페이스를 제공 하며, query router 처럼 동작한다.
 	- config servers : 메타데이터와 설정을 저장한다. 3.4 버전 부터는 config server 또한 replica set으로 구성해야만 한다.(CSRS)
 
+- 샤드 구성 과정 
+
+```
+# prepare shards 
+
+mongod --shardsvr --dbpath /mongo/sdb01 --port 10000
+mongod --shardsvr --dbpath /mongo/sdb02 --port 20000
+mongod --shardsvr --dbpath /mongo/sdb03 --port 30000
+
+# config server start with repl set
+
+mongod --configsvr --dbpath /mongo/cdb01 --port 40000
+mongod --configsvr --replSet cdb --dbpath /mongo/cdb01 --port 40001
+mongod --configsvr --replSet cdb --dbpath /mongo/cdb02 --port 40002
+
+## in mongo shell (primary configdb)
+rsconf = {_id:"cdb", members:[{_id : 0, host:"localhost:40001"}]}
+rs.initiate(rsconf)
+rs.add("localhost:40002")
+
+rs.status()
+
+# mongos start
+mongos --configdb cdb/localhost:40001,localhost:40002    --chunkSize 1
+
+## connect mongos 27017 (default)
+
+$mongo
+> use admin
+db.runCommand({addshard:'localhost:10000'}); 
+db.runCommand({addshard:'localhost:20000'}); 
+db.runCommand({addshard:'localhost:30000'}); 
+
+
+# mongos 에서 db 생성 후 data insert 
+
+use common; 
+mongos> for(var i=0; i<100000;i++) {
+... db.user.insert({_id:i, age:42, name:'euzin'+i });
+... }
+
+--> sdb01 에만 데이터가 존재한다. 
+
+# shard 설정 
+mongos> db.runCommand({enablesharding:'common'});
+mongos> db.runCommand({shardcollection:'common.user', key:{_id:1}});
+   ```
+
 
 ## MongoDB - manage mongod process
 - start mongod process
