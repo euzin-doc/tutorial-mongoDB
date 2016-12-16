@@ -5,6 +5,7 @@
 > -- 2000년 Eric Brewer 세운 가설이고 이후 증명 되었다.
 
 - CAP 이론 
+
 	![cap 이론](https://github.com/euzin-doc/tutorial-mongoDB/blob/master/cap.png?raw=true)
 
 	- Consistency
