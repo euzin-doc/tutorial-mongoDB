@@ -6,7 +6,7 @@
 
 - CAP 이론 
 
-	![cap 이론](https://github.com/euzin-doc/tutorial-mongoDB/blob/master/cap.png?raw=true)
+	![cap 이론](./img/cap.png)
 
 	- Consistency
 		- ACID 의 C 가 아님.
